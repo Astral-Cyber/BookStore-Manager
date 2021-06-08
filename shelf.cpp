@@ -128,7 +128,7 @@ int show_shelf(sort_bar *&H) {//显示全部书架，图形化待完善
 }
 
 int show_sort(sort_bar *&H, char sort[20]) {//按分类显示书架，图形化待完善
-    sort_bar *p= locate_sort(H,sort);
+    sort_bar *p = locate_sort(H, sort);
 }
 
 
