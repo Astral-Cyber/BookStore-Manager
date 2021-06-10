@@ -41,6 +41,7 @@ void create_sort(sort_bar *&H, book B) {//创建分类
     H->right->conbar = true;
     H->right->B = B;
     H->right->next = NULL;
+    H->right->pre=NULL;
     H->down = NULL;
 }
 
@@ -66,6 +67,7 @@ bookshelf *locate_book(sort_bar *&H, char name[20]) {//按书名定位
         }
         p = p->down;
     }
+    cout<<"书架中无此书，请重新输入";
     return 0;
 }
 
@@ -110,6 +112,46 @@ int in_shelf(sort_bar *&H, book B) {//书籍入书架
 
 int out_shelf(sort_bar *&H, char name[20]) {//书籍出书架
     bookshelf *p = locate_book(H, name);//获取该书籍地址
+    if (!p){
+        return 0;
+    }
+    bookshelf *q;//前一本书
+    sort_bar *r = locate_sort(H, p->B.sort);
+    if (!r){
+        cout<<"无此书或此书不再该分类中";
+        return 0;
+    }
+    p->B.count--;
+    if ((p->B.count==0)&&(p->conbar)){//该书为分类中第一本
+        if (p->next==NULL) {//后面无书
+            if (r == H)
+                H = H->down;
+            else {
+                if (r->down == NULL)
+                    r->up->down = NULL;
+                else {
+                    r->up->down = r->down;
+                    r->down->up = r->up;
+                }
+            }
+            delete r;
+            delete p;
+        } else{//后面还有书
+            r->right=p->next;
+            p->next->conbar=true;
+            delete p;
+        }
+    }
+    if ((p->B.count==0)&&!(p->conbar)){//该书为分类中非第一本
+        if (p->next==NULL) {//后面无书
+            p->pre->next=NULL;
+            delete p;
+        } else{//后面还有书
+            p->pre->next=p->next;
+            p->next->pre=p->pre;
+            delete p;
+        }
+    }
 }
 
 int show_shelf(sort_bar *&H) {//显示全部书架，图形化待完善
@@ -136,16 +178,23 @@ int main() {
     sort_bar *Head;
     set_shelf(Head);
     book a;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 12; ++i) {
         cout << "书名";
         cin >> a.name;
         cout << "类别";
         cin >> a.sort;
+        cout << "数量";
+        cin>>a.count;
         in_shelf(Head, a);
     }
     show_shelf(Head);//显示书架
     char q[20];
     cin >> q;
-    cout << locate_book(Head, q)->B.name;//测试查找功能
+    cout << locate_book(Head, q);//测试查找功能
+    for (int i = 0; i < 12; ++i) {
+        cin>>q;
+        out_shelf(Head,q);
+        show_shelf(Head);
+    }
     return 0;
 }
