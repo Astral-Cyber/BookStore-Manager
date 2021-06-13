@@ -6,9 +6,15 @@
 
 #IncludeRegexTransform: 
 
+/Users/astral/CLionProjects/BookStore-Manager/book.h
+
 /Users/astral/CLionProjects/BookStore-Manager/shelf.cpp
 iostream
 -
 cstring
 -
+iomanip
+-
+book.h
+/Users/astral/CLionProjects/BookStore-Manager/book.h
 

@@ -80,6 +80,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/astral/CLionProjects/BookStore-Manager/book.h">
+			<Option target="BookStore_Manager"/>
+		</Unit>
 		<Unit filename="/Users/astral/CLionProjects/BookStore-Manager/main.cpp">
 			<Option target="BookStore_Manager"/>
 		</Unit>
