@@ -9,7 +9,7 @@
 class book {
 public:
     char name[20];
-    char author[20];
+    char author[20] = "author";
     char sort[20];
     int count;
 };
@@ -35,14 +35,20 @@ sort_bar *locate_sort(sort_bar *&H, char sort[20]);
 
 bookshelf *locate_book(sort_bar *&H, char name[20]);
 
-bookshelf *locate_book(sort_bar *&H,bookshelf *&t, char name[20],char author[20]);
+bookshelf *locate_book(sort_bar *&H, bookshelf *&t, char name[20], char author[20], int temp);
+
+void book_info(sort_bar *&H,char name[20]);
 
 int in_shelf(sort_bar *&H, book B);
 
 int out_shelf(sort_bar *&H, char name[20]);
 
+void fix_book(sort_bar *&H,char name[20]);
+
 void show_shelf(sort_bar *&H);
 
 void show_sort(sort_bar *&H, char sort[20]);
+
+void show_author(sort_bar *&H, char author[20]);
 
 #endif //BOOKSTORE_MANAGER_BOOK_H

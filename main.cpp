@@ -19,10 +19,15 @@ int main() {
     }
     show_shelf(Head);//显示书架
     cin >> q;
-    show_sort(Head, q);
+    fix_book(Head,q);
+    show_shelf(Head);
     cin >> q;
-    cout << locate_book(Head, q);//测试查找功能
-    for (int i = 0; i < 12; ++i) {
+    show_sort(Head, q);//分类显示测试
+    cin >> q;
+    show_author(Head, q);//作者显示测试
+    cin >> q;
+    book_info(Head, q);//测试查找功能
+    for (int i = 0; i < 12; ++i) {//测试删除
         cin >> q;
         out_shelf(Head, q);
         show_shelf(Head);

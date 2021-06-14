@@ -12,8 +12,8 @@ bool F = true;
 void set_shelf(sort_bar *&H) {//初始化书架
     H = new sort_bar;
     rs = H;
-    H->right = NULL;
-    H->down = NULL;
+    H->right = nullptr;
+    H->down = nullptr;
 }
 
 
@@ -22,23 +22,23 @@ void create_sort(sort_bar *&H, book B) {//创建分类
     H->right = new bookshelf;
     H->right->conbar = true;
     H->right->B = B;
-    H->right->next = NULL;
-    H->right->pre = NULL;
-    H->down = NULL;
+    H->right->next = nullptr;
+    H->right->pre = nullptr;
+    H->down = nullptr;
 }
 
 sort_bar *locate_sort(sort_bar *&H, char sort[20]) {//定位分类
     sort_bar *p = H;
-    while (p != NULL) {
+    while (p != nullptr) {
         if (!strcmp(p->sort, sort))
             return p;
         p = p->down;
     }
-    return 0;
+    return nullptr;
 }
 
-void locate_book(sort_bar *&H, bookshelf *b[], char name[20], char author[20]) {//按书名作者定位
-    for (int i = 1; i < 10; ++i) {
+void locate_book(sort_bar *&H, bookshelf *b[], char name[20], char author[20], int temp) {//按书名作者定位
+    for (int i = 1; i <= temp; ++i) {
         if (!strcmp(name, b[i]->B.name) && !strcmp(author, b[i]->B.author))//找到目标书籍
             b[0] = b[i];
     }
@@ -49,9 +49,9 @@ bookshelf *locate_book(sort_bar *&H, char name[20]) {//按书名定位
     bookshelf *b1[10];
     int temp = 0;
     sort_bar *p = H;
-    while (p != NULL) {
+    while (p != nullptr) {
         b = p->right;//进入该分类
-        while (b != NULL) {
+        while (b != nullptr) {
             if (!strcmp(name, b->B.name))//判断该分类中有无此书
             {
                 temp++;
@@ -63,32 +63,36 @@ bookshelf *locate_book(sort_bar *&H, char name[20]) {//按书名定位
     }
     if (temp == 0) {
         cout << "书架中无此书，请重新输入" << endl;
-        return 0;
+        return nullptr;
     } else {
         if (temp == 1) {
             return b1[1];
         } else {
             cout << "该书存在不同作者，请输入作者名称查找" << endl;
             char author[20];
-            locate_book(H, b1, name, author);
+            locate_book(H, b1, name, author, temp);
             return b1[0];
         }
     }
 }
 
-/*int same_book(bookshelf *S, book B) {//处理同样的书籍
-
-}*/
+void book_info(sort_bar *&H, char *name) {
+    bookshelf *p = locate_book(H, name);
+    cout << setw(15) << "| Book Sort" << setw(25) << "| Book Name" << setw(20) << "| Author" << "| Count" << endl;
+    cout << "|--------------|------------------------|-------------------|------" << endl;
+    cout << "| " << setw(13) << p->B.sort;
+    cout << "| " << setw(23) << p->B.name << "| " << setw(18) << p->B.author << "| " << p->B.count<<endl;
+    cout << "|--------------|------------------------|-------------------|------" << endl;
+}
 
 int in_shelf(sort_bar *&H, book B) {//书籍入书架
-    sort_bar *a = locate_sort(H, B.sort);
+    sort_bar *a = locate_sort(H, B.sort);//定位分类
     bookshelf *b;
     if (a) {//该分类存在的情况下
         b = a->right;
-        while (b->next != NULL) {
-            if (!strcmp(B.name, b->B.name)) {//处理存在同名书籍
+        while (b->next != nullptr) {
+            if (!strcmp(B.name, b->B.name) && !strcmp(B.author, b->B.author)) {//处理存在相同书籍
                 b->B.count++;
-                /*same_book(b, B);*/
                 return 0;
             }
             b = b->next;
@@ -97,10 +101,7 @@ int in_shelf(sort_bar *&H, book B) {//书籍入书架
         b->next->pre = b;
         b = b->next;
         b->B = B;
-        b->next = NULL;
-        /*if (b->B.count > 1) {//处理一次性进货多本同类书;
-            same_book(b,B);
-        }*/
+        b->next = nullptr;
     } else { //该分类不存在
         if ((rs == H) && F) {
             create_sort(rs, B);
@@ -112,6 +113,7 @@ int in_shelf(sort_bar *&H, book B) {//书籍入书架
             create_sort(rs, B);
         }
     }
+    return 1;
 }
 
 
@@ -120,20 +122,19 @@ int out_shelf(sort_bar *&H, char name[20]) {//书籍出书架
     if (!p) {
         return 0;
     }
-    bookshelf *q;//前一本书
     sort_bar *r = locate_sort(H, p->B.sort);
     if (!r) {
         cout << "无此书或此书不再该分类中，请重新输入" << endl;
-        return 0;
+        return 1;
     }
     p->B.count--;
     if ((p->B.count == 0) && (p->conbar)) {//该书为分类中第一本
-        if (p->next == NULL) {//后面无书
+        if (p->next == nullptr) {//后面无书
             if (r == H)
                 H = H->down;
             else {
-                if (r->down == NULL)
-                    r->up->down = NULL;
+                if (r->down == nullptr)
+                    r->up->down = nullptr;
                 else {
                     r->up->down = r->down;
                     r->down->up = r->up;
@@ -148,8 +149,8 @@ int out_shelf(sort_bar *&H, char name[20]) {//书籍出书架
         }
     }
     if ((p->B.count == 0) && !(p->conbar)) {//该书为分类中非第一本
-        if (p->next == NULL) {//后面无书
-            p->pre->next = NULL;
+        if (p->next == nullptr) {//后面无书
+            p->pre->next = nullptr;
             delete p;
         } else {//后面还有书
             p->pre->next = p->next;
@@ -157,44 +158,129 @@ int out_shelf(sort_bar *&H, char name[20]) {//书籍出书架
             delete p;
         }
     }
+    return 2;
 }
 
-void show_shelf(sort_bar *&H) {//显示全部书架，图形化待完善
+void fix_book(sort_bar *&H, char name[20]) {
+    bookshelf *p = locate_book(H, name);
+    if (!p) {
+        return;
+    }
+    bookshelf q;
+    char option = 'a';
+    cout << "请输入要修改的属性：";
+    while (option != '*') {
+        if (option == 'a')
+            cin >> option;
+        switch (option) {
+            case 'S':
+                cout << "请输入要修改后的分类：";
+                q.B = p->B;
+                cin >> q.B.sort;
+                out_shelf(H, name);
+                in_shelf(H, q.B);
+                cout << "修改完成，输入其他属性继续或输入'*'退出";
+                break;
+            case 'N':
+                cout << "请输入要修改后的书名：";
+                cin >> p->B.name;
+                cout << "修改完成，输入其他属性继续或输入'*'退出";
+                break;
+            case 'C':
+                cout << "请输入要修改后的数量：";
+                cin >> p->B.count;
+                cout << "修改完成，输入其他属性继续或输入'*'退出";
+                break;
+            case 'A':
+                cout << "请输入要修改后的作者：";
+                cin >> p->B.author;
+                cout << "修改完成，输入其他属性继续或输入'*'退出";
+                break;
+            default:
+                cout << "输入错误，请输入例如S(分类),N(名称),C(数量),A(作者)等对应信息首字母(输入'*'退出)";
+                break;
+        }
+        cin >> option;
+    }
+}
+
+void show_shelf(sort_bar *&H) {//显示全部书架，图形化
     bookshelf *b;
     sort_bar *p = H;
-    cout << "| Book Sort" << setw(15) << "| Book Name" << setw(20) << "| Count" << endl;
-    while (p != NULL) {
-        cout << "|--------------|-----------------------|------" << endl;
-        cout << "| " << p->sort << setw(14);
+    cout << setiosflags(ios::left);
+    cout << setw(15) << "| Book Sort" << setw(25) << "| Book Name" << setw(20) << "| Author" << "| Count" << endl;
+    while (p != nullptr) {
+        cout << "|--------------|------------------------|-------------------|------" << endl;
+        cout << "| " << setw(13) << p->sort;
         b = p->right;
-        while (b != NULL) {
-            cout << "| " << b->B.name << setw(21) << "| " << b->B.count;
+        while (b != nullptr) {
+            cout << "| " << setw(23) << b->B.name << "| " << setw(18) << b->B.author << "| " << b->B.count;
             cout << endl;
-            if (b->next != NULL) {
-                cout << "|              |-----------------------|------" << endl;
-                cout << "|" << setw(16);
+            if (b->next != nullptr) {
+                cout << "|              |------------------------|-------------------|------" << endl;
+                cout << setw(15) << "|";
             }
             b = b->next;
         }
         p = p->down;
     }
+    cout << "|--------------|------------------------|-------------------|------" << endl;
 }
 
-void show_sort(sort_bar *&H, char sort[20]) {//按分类显示书架，图形化待完善
+void show_sort(sort_bar *&H, char sort[20]) {//按分类显示书架，图形化
     sort_bar *p = locate_sort(H, sort);
+    if (!p) {
+        cout << "无此分类，请重新输入" << endl;
+        return;
+    }
     bookshelf *b;
     b = p->right;
-    cout << "| Book Sort" << setw(15) << "| Book Name" << setw(20) << "| Count" << endl;
-    cout << "|--------------|-----------------------|------" << endl;
-    cout << "| " << p->sort << setw(14);
-    while (b != NULL) {
-        cout << "| " << b->B.name << setw(21) << "| " << b->B.count;
+    cout << setiosflags(ios::left);
+    cout << setw(15) << "| Book Sort" << setw(25) << "| Book Name" << setw(20) << "| Author" << "| Count" << endl;
+    cout << "|--------------|------------------------|-------------------|------" << endl;
+    cout << "| " << setw(13) << p->sort;
+    while (b != nullptr) {
+        cout << "| " << setw(23) << b->B.name << "| " << setw(18) << b->B.author << "| " << b->B.count;
         cout << endl;
-        if (b->next != NULL) {
-            cout << "|              |-----------------------|------" << endl;
-            cout << "|" << setw(16);
+        if (b->next != nullptr) {
+            cout << "|              |------------------------|-------------------|------" << endl;
+            cout << setw(15) << "|";
         }
         b = b->next;
     }
-    cout << "|--------------|-----------------------|------" << endl;
+    cout << "|--------------|------------------------|-------------------|------" << endl;
+}
+
+void show_author(sort_bar *&H, char author[20]) {
+    bookshelf *b1[100];
+    bookshelf *b;
+    int temp = 0;
+    sort_bar *p = H;
+    while (p != nullptr) {
+        b = p->right;//进入该分类
+        while (b != nullptr) {
+            if (!strcmp(author, b->B.author)) {
+                temp++;
+                b1[temp] = b;
+            }
+            b = b->next;
+        }
+        p = p->down;
+    }
+    if (temp == 0) {
+        cout << "书架中无此作者书籍，请重新输入" << endl;
+        return;
+    }
+    cout << setw(15) << "| Author" << setw(25) << "| Book Name" << "| Count" << endl;
+    cout << "|--------------|------------------------|------" << endl;
+    cout << "| " << setw(13) << author;
+    for (int i = 1; i <= temp; ++i) {
+        cout << "| " << setw(23) << b1[i]->B.name << "| " << b1[i]->B.count;
+        cout << endl;
+        if (i < temp) {
+            cout << "|              |------------------------|------" << endl;
+            cout << setw(15) << "|";
+        }
+    }
+    cout << "|--------------|------------------------|------" << endl;
 }
