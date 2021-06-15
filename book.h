@@ -5,12 +5,26 @@
 #ifndef BOOKSTORE_MANAGER_BOOK_H
 #define BOOKSTORE_MANAGER_BOOK_H
 
-
 class book {
 public:
-    char name[20];
+    char *get_n() { return name; }
+
+    char *get_a() { return author; }
+
+    char *get_s() { return sort; }
+
+    int *get_c() { return &count; }
+
+    double *get_sp() { return &sell_price; }
+
+    double *get_ip() { return &in_price; }
+
+private:
+    char name[20] = "name";
     char author[20] = "author";
     char sort[20];
+    double sell_price=100.78;
+    double in_price=10;
     int count;
 };
 
@@ -20,6 +34,7 @@ struct bookshelf {
     bookshelf *pre;
     bookshelf *next;
 };
+
 struct sort_bar {
     sort_bar *up;
     sort_bar *down;
@@ -37,18 +52,24 @@ bookshelf *locate_book(sort_bar *&H, char name[20]);
 
 bookshelf *locate_book(sort_bar *&H, bookshelf *&t, char name[20], char author[20], int temp);
 
-void book_info(sort_bar *&H,char name[20]);
+int book_info(sort_bar *&H);
 
-int in_shelf(sort_bar *&H, book B);
+double in_shelf(sort_bar *&H, book B);
 
-int out_shelf(sort_bar *&H, char name[20]);
+double in_books(sort_bar *&H,book B);
 
-void fix_book(sort_bar *&H,char name[20]);
+double out_shelf(sort_bar *&H, char name[20],bool f);
+
+int fix_book(sort_bar *&H);
 
 void show_shelf(sort_bar *&H);
 
-void show_sort(sort_bar *&H, char sort[20]);
+int show_sort(sort_bar *&H);
 
-void show_author(sort_bar *&H, char author[20]);
+int show_author(sort_bar *&H);
+
+void read_shelf(sort_bar *&H);
+
+void save_shelf(sort_bar *&H);
 
 #endif //BOOKSTORE_MANAGER_BOOK_H

@@ -11,6 +11,8 @@
 /Users/astral/CLionProjects/BookStore-Manager/shelf.cpp
 iostream
 -
+fstream
+-
 cstring
 -
 iomanip
