@@ -405,12 +405,14 @@ void read_shelf(sort_bar *&H) {//读取书架内容
     }
     cout << "书架读取完成。" << endl;
     cout << "欢迎使用书籍管理系统v1.0" << endl;
+    cout<<"该项目已上传至Github(https://github.com/Astral-cyber/BookStore-Manager)"<<endl;
 }
 
 void menu() {
-    cout << "         菜单" << endl;
+    cout << "----------菜单---------" << endl;
     cout << setiosflags(ios::left);
     cout << setw(20) << "1）书架" << "2）出售" << endl;
     cout << setw(20) << "3）进货" << "4）查找" << endl;
     cout << setw(20) << "5）修改" << "6）资金" << endl;
+    cout<<setw(20)<<"0）退出系统"<<endl;
 }
