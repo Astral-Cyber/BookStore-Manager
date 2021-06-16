@@ -23,8 +23,8 @@ private:
     char name[20] = "name";
     char author[20] = "author";
     char sort[20];
-    double sell_price=100.78;
-    double in_price=10;
+    double sell_price = 100.78;
+    double in_price = 10;
     int count;
 };
 
@@ -56,9 +56,9 @@ int book_info(sort_bar *&H);
 
 double in_shelf(sort_bar *&H, book B);
 
-double in_books(sort_bar *&H,book B);
+double in_books(sort_bar *&H);
 
-double out_shelf(sort_bar *&H, char name[20],bool f);
+double out_shelf(sort_bar *&H, char name[20], bool f);
 
 int fix_book(sort_bar *&H);
 
@@ -72,4 +72,5 @@ void read_shelf(sort_bar *&H);
 
 void save_shelf(sort_bar *&H);
 
+void menu();
 #endif //BOOKSTORE_MANAGER_BOOK_H

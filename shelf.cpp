@@ -10,6 +10,36 @@ sort_bar *rs;//类的尾指针
 
 bool F = true;
 
+double cost = 0;
+
+ostream &operator<<(ostream &output, book &B) {//重载流操作符<<
+    cout << "| " << setw(23) << B.get_n() << "| " << setw(18) << B.get_a() << "| " << setw(8)
+         << *B.get_sp() << "| " << *B.get_c();
+    return output;
+}
+
+ifstream &operator>>(ifstream &in, book &B) {//重载文件读取的>>
+    in >> B.get_n() >> B.get_a() >> B.get_s() >> *B.get_c() >> *B.get_ip() >> *B.get_sp();
+    cost += *B.get_ip() * *B.get_c();
+    return in;
+}
+
+istream &operator>>(istream &input, book &B) {//重载流操作的>>
+    cout << "请输入进货的书籍名称：";
+    cin >> B.get_n();
+    cout << "请输入进货的书籍作者：";
+    cin >> B.get_a();
+    cout << "请输入进货的书籍分类：";
+    cin >> B.get_s();
+    cout << "请输入进货的书籍数量：";
+    cin >> *B.get_c();
+    cout << "请输入进货的书籍售价：";
+    cin >> *B.get_sp();
+    cout << "请输入进货的书籍进价：";
+    cin >> *B.get_ip();
+    return input;
+}
+
 void set_shelf(sort_bar *&H) {//初始化书架
     H = new sort_bar;
     rs = H;
@@ -85,6 +115,7 @@ int book_info(sort_bar *&H) {//获取书籍信息
     if (!p) {
         return 0;
     }
+    cout << setiosflags(ios::left);
     cout << setw(15) << "| Book Sort" << setw(25) << "| Book Name" << setw(20) << "| Author" << "| Count" << endl;
     cout << "|--------------|------------------------|-------------------|------" << endl;
     cout << "| " << setw(13) << p->B.get_s();
@@ -98,12 +129,15 @@ double in_shelf(sort_bar *&H, book B) {//书籍入书架
     bookshelf *b;
     if (a) {//该分类存在的情况下
         b = a->right;
-        while (b->next != nullptr) {
+        while (b != nullptr) {
             if (!strcmp(B.get_n(), b->B.get_n()) && !strcmp(B.get_a(), b->B.get_a())) {//处理存在相同书籍
                 (*b->B.get_c()) += *B.get_c();
                 return (*B.get_ip()) * (*B.get_c());
             }
-            b = b->next;
+            if (b->next != nullptr)
+                b = b->next;
+            else
+                break;
         }
         b->next = new bookshelf;
         b->next->pre = b;
@@ -124,24 +158,14 @@ double in_shelf(sort_bar *&H, book B) {//书籍入书架
     return (*B.get_ip()) * (*B.get_c());
 }
 
-double in_books(sort_bar *&H, book B) {//进货
-    cout << "请输入进货的书籍名称：";
-    cin >> B.get_n();
-    cout << "请输入进货的书籍作者：";
-    cin >> B.get_a();
-    cout << "请输入进货的书籍分类：";
-    cin >> B.get_s();
-    cout << "请输入进货的书籍数量：";
-    cin >> *B.get_c();
-    cout << "请输入进货的书籍售价：";
-    cin >> *B.get_sp();
-    cout << "请输入进货的书籍进价：";
-    cin >> *B.get_ip();
-    cout << "请输入进货的书籍名称：";
+double in_books(sort_bar *&H) {//进货
+    book B;
+    cin >> B;
+    in_shelf(H, B);
     return (*B.get_ip()) * (*B.get_c());
 }
 
-double out_shelf(sort_bar *&H, char name[20], bool f) {//书籍出书架
+double out_shelf(sort_bar *&H, char name[20], bool f) {//书籍出书架 f为真时出售模式，为假时为该书全部移出书架
     bookshelf *p = locate_book(H, name);//获取该书籍地址
     double money;
     if (!p) {
@@ -159,11 +183,11 @@ double out_shelf(sort_bar *&H, char name[20], bool f) {//书籍出书架
         (*p->B.get_c()) -= n;
         money = *p->B.get_sp();
         if ((*p->B.get_c()) < 0) {
-            cout << "库存不足";
+            cout << "库存不足" << endl;
             return 0;
         }
-    } else{
-        *p->B.get_c()=0;
+    } else {
+        *p->B.get_c() = 0;
         money = *p->B.get_sp();
     }
     if ((*p->B.get_c() == 0) && (p->conbar)) {//该书为分类中第一本
@@ -242,13 +266,16 @@ int fix_book(sort_bar *&H) {//修改书籍信息
                 cin >> *p->B.get_ip();
                 cout << "修改完成，输入其他属性继续或输入'*'退出";
                 break;
-            case 'O':
+            case 'D':
+                out_shelf(H, name, false);
+                break;
+            case 'P':
                 cout << "请输入要修改后的售价：";
                 cin >> *p->B.get_sp();
                 cout << "修改完成，输入其他属性继续或输入'*'退出";
                 break;
             default:
-                cout << "输入错误，请输入例如S(分类),N(名称),C(数量),A(作者)等对应信息首字母(输入'*'退出)";
+                cout << "输入错误，请输入S(分类),N(名称),C(数量),A(作者),D(删除),P(售价)等对应信息首字母(输入'*'退出)";
                 break;
         }
         cin >> option;
@@ -267,8 +294,7 @@ void show_shelf(sort_bar *&H) {//显示全部书架，图形化
         cout << "| " << setw(13) << p->sort;
         b = p->right;
         while (b != nullptr) {
-            cout << "| " << setw(23) << b->B.get_n() << "| " << setw(18) << b->B.get_a() << "| " << setw(8)
-                 << *b->B.get_sp() << "| " << *b->B.get_c();
+            cout << b->B;
             cout << endl;
             if (b->next != nullptr) {
                 cout << "|              |------------------------|-------------------|---------|------" << endl;
@@ -299,8 +325,7 @@ int show_sort(sort_bar *&H) {//按分类显示书架，图形化
     cout << "| " << setw(13) << p->sort;
     while (b != nullptr) {
         cout << "| " << setw(23) << b->B.get_n() << "| " << setw(18) << b->B.get_a() << "| " << setw(8)
-             << *b->B.get_sp()
-             << "| " << *b->B.get_c();
+             << *b->B.get_sp() << "| " << *b->B.get_c();
         cout << endl;
         if (b->next != nullptr) {
             cout << "|              |------------------------|-------------------|---------|------" << endl;
@@ -335,6 +360,7 @@ int show_author(sort_bar *&H) {//按作者显示书籍
         cout << "书架中无此作者书籍，请重新输入" << endl;
         return 0;
     }
+    cout << setiosflags(ios::left);
     cout << setw(15) << "| Author" << setw(25) << "| Book Name" << setw(10) << "| Price" << "| Count" << endl;
     cout << "|--------------|------------------------|---------|------" << endl;
     cout << "| " << setw(13) << author;
@@ -369,17 +395,22 @@ void save_shelf(sort_bar *&H) {//保存书架
 }
 
 void read_shelf(sort_bar *&H) {//读取书架内容
-    book a;
+    book B;
     ifstream in("../bookstore.txt");
     while (!in.eof()) {
-        in >> a.get_n();
-        in >> a.get_a();
-        in >> a.get_s();
-        in >> *a.get_c();
-        in >> *a.get_ip();
-        in >> *a.get_sp();
+        in >> B;
         if (in.fail())//防止重复读去最后一行两次
             break;
-        in_shelf(H, a);
+        in_shelf(H, B);
     }
+    cout << "书架读取完成。" << endl;
+    cout << "欢迎使用书籍管理系统v1.0" << endl;
+}
+
+void menu() {
+    cout << "         菜单" << endl;
+    cout << setiosflags(ios::left);
+    cout << setw(20) << "1）书架" << "2）出售" << endl;
+    cout << setw(20) << "3）进货" << "4）查找" << endl;
+    cout << setw(20) << "5）修改" << "6）资金" << endl;
 }
