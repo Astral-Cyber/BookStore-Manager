@@ -195,8 +195,10 @@ double out_shelf(sort_bar *&H, char name[20], bool f) {//书籍出书架 f为真
             if (r == H)
                 H = H->down;
             else {
-                if (r->down == nullptr)
+                if (r->down == nullptr){
+                    rs=r->up;
                     r->up->down = nullptr;
+                }
                 else {
                     r->up->down = r->down;
                     r->down->up = r->up;
@@ -209,7 +211,7 @@ double out_shelf(sort_bar *&H, char name[20], bool f) {//书籍出书架 f为真
             p->next->conbar = true;
             delete p;
         }
-    }
+    }else {
     if ((*p->B.get_c() == 0) && !(p->conbar)) {//该书为分类中非第一本
         if (p->next == nullptr) {//后面无书
             p->pre->next = nullptr;
@@ -219,6 +221,7 @@ double out_shelf(sort_bar *&H, char name[20], bool f) {//书籍出书架 f为真
             p->next->pre = p->pre;
             delete p;
         }
+    }
     }
     return money;
 }
